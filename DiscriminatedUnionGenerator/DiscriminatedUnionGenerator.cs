@@ -147,7 +147,7 @@ namespace DiscriminatedUnionGenerator
                 }
 
                 // Create an EnumToGenerate for use in the generation phase
-                enumsToGenerate.Add(new EnumToGenerate(enumName, members));
+                enumsToGenerate.Add(new EnumToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumName, members));
             }
 
             return enumsToGenerate;
@@ -156,13 +156,18 @@ namespace DiscriminatedUnionGenerator
         public static string GenerateExtensionClass(List<EnumToGenerate> enumsToGenerate)
         {
             var sb = new StringBuilder();
-            sb.Append(@"
-namespace NetEscapades.EnumGenerators
-{
-    public static partial class EnumExtensions
-    {");
+
             foreach (var enumToGenerate in enumsToGenerate)
             {
+                if (!string.IsNullOrWhiteSpace(enumToGenerate.TypeNamespace))
+                {
+                    sb.Append($@"
+namespace {enumToGenerate.TypeNamespace}
+{{
+    public static partial class EnumExtensions
+    {{");
+                }
+
                 sb.Append(@"
                 public static string ToStringFast(this ").Append(enumToGenerate.Name).Append(@" value)
                     => value switch
@@ -179,11 +184,14 @@ namespace NetEscapades.EnumGenerators
                     _ => value.ToString(),
                 };
 ");
-            }
 
-            sb.Append(@"
+                if (!string.IsNullOrWhiteSpace(enumToGenerate.TypeNamespace))
+                {
+                    sb.Append(@"
     }
 }");
+                }
+            }
 
             return sb.ToString();
         }
@@ -192,13 +200,16 @@ namespace NetEscapades.EnumGenerators
 
     public readonly struct EnumToGenerate
     {
-        public readonly string Name;
-        public readonly List<string> Values;
+        public string? TypeNamespace { get; }
+        public string Name { get; }
+        public List<string> Values { get; }
 
-        public EnumToGenerate(string name, List<string> values)
+        public EnumToGenerate(string? typeNamespace, string name, List<string> values)
         {
+            TypeNamespace = typeNamespace;
             Name = name;
             Values = values;
+
         }
     }
 }
