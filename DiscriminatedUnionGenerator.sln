@@ -5,7 +5,9 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscriminatedUnionGenerator", "DiscriminatedUnionGenerator\DiscriminatedUnionGenerator.csproj", "{95BD812B-B148-4333-A941-CB11A6856629}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscriminatedUnionGenerator.Sample", "DiscriminatedUnionGenerator.Sample\DiscriminatedUnionGenerator.Sample.csproj", "{A75C2F07-60AF-4E56-95ED-1C3522014F4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscriminatedUnionGenerator.Sample", "DiscriminatedUnionGenerator.Sample\DiscriminatedUnionGenerator.Sample.csproj", "{A75C2F07-60AF-4E56-95ED-1C3522014F4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscriminatedUnionGenerator.Tests", "DiscriminatedUnionGenerator.Tests\DiscriminatedUnionGenerator.Tests.csproj", "{D499AC7B-1D19-4E08-8315-6A9177B2F937}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{A75C2F07-60AF-4E56-95ED-1C3522014F4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A75C2F07-60AF-4E56-95ED-1C3522014F4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A75C2F07-60AF-4E56-95ED-1C3522014F4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D499AC7B-1D19-4E08-8315-6A9177B2F937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D499AC7B-1D19-4E08-8315-6A9177B2F937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D499AC7B-1D19-4E08-8315-6A9177B2F937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D499AC7B-1D19-4E08-8315-6A9177B2F937}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
