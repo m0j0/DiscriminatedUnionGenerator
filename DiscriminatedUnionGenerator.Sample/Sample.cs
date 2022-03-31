@@ -7,8 +7,9 @@ using DiscriminatedUnionGenerator;
 
 namespace DiscriminatedUnionGenerator.Sample
 {
-    [DiscriminatedUnionCase]
-    public class Sample
+    [DiscriminatedUnionCase(typeof(object))]
+    [DiscriminatedUnionCase(typeof(object), "Test")]
+    public sealed class Sample
     {
     }
 }

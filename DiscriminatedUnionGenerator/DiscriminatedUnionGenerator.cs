@@ -9,12 +9,27 @@ namespace DiscriminatedUnionGenerator
     [Generator]
     public class DiscriminatedUnionGenerator : IIncrementalGenerator
     {
-        public const string Attribute = @"
+        public const string Attribute = @"#nullable enable
+
 namespace DiscriminatedUnionGenerator
 {
-    [System.AttributeUsage(System.AttributeTargets.Class)]
-    public class DiscriminatedUnionCaseAttribute : System.Attribute
+    [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct, AllowMultiple = true)]
+    internal sealed class DiscriminatedUnionCaseAttribute : System.Attribute
     {
+        public DiscriminatedUnionCaseAttribute(Type type)
+        {
+            Type = type;
+        }
+
+        public DiscriminatedUnionCaseAttribute(Type type, string? name)
+        {
+            Type = type;
+            Name = name;
+        }
+
+        public Type Type { get; }
+
+        public string? Name { get; }
     }
 }";
         public void Initialize(IncrementalGeneratorInitializationContext context)
