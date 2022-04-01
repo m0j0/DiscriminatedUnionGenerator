@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!--<ItemGroup Condition="'$(Configuration)' == 'Debug'">-->
   <ItemGroup>
     <ProjectReference Include="..\DiscriminatedUnionGenerator\DiscriminatedUnionGenerator.csproj"
                       OutputItemType="Analyzer"
