@@ -35,7 +35,7 @@ namespace DiscriminatedUnionGenerator
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-                "EnumExtensionsAttribute.g.cs",
+                "DiscriminatedUnionCaseAttribute.g.cs",
                 SourceText.From(Attribute, Encoding.UTF8)));
 
             // Do a simple filter for classes
