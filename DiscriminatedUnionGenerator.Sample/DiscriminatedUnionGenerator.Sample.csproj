@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <!--<ItemGroup Condition="'$(Configuration)' == 'Debug'">-->
+  <!--<Target Name="CleanOldCompilerGeneratedFiles">
+    <RemoveDir Directories="$(CompilerGeneratedFilesOutputPath)" />
+  </Target>-->
   <ItemGroup>
     <ProjectReference Include="..\DiscriminatedUnionGenerator\DiscriminatedUnionGenerator.csproj"
                       OutputItemType="Analyzer"
