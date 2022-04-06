@@ -9,7 +9,9 @@ namespace DiscriminatedUnionGenerator
     [Generator]
     public class DiscriminatedUnionGenerator : IIncrementalGenerator
     {
-        public const string Attribute = @"#nullable enable
+        private const string CaseAttributeName = "DiscriminatedUnionGenerator.DiscriminatedUnionCaseAttribute";
+
+        private const string Attribute = @"#nullable enable
 
 namespace DiscriminatedUnionGenerator
 {
@@ -37,9 +39,8 @@ namespace DiscriminatedUnionGenerator
             context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
                 "DiscriminatedUnionCaseAttribute.g.cs",
                 SourceText.From(Attribute, Encoding.UTF8)));
-
-            // Do a simple filter for classes
-            IncrementalValuesProvider<ClassDeclarationSyntax> enumDeclarations = context.SyntaxProvider
+            
+            IncrementalValuesProvider<ClassDeclarationSyntax> classDeclarations = context.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => IsSyntaxTargetForGeneration(s), // select classes with attributes
                     transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx)) // sect the enum with the [EnumExtensions] attribute
@@ -47,7 +48,7 @@ namespace DiscriminatedUnionGenerator
 
             // Combine the selected classes with the `Compilation`
             IncrementalValueProvider<(Compilation, ImmutableArray<ClassDeclarationSyntax>)> compilationAndEnums
-                = context.CompilationProvider.Combine(enumDeclarations.Collect());
+                = context.CompilationProvider.Combine(classDeclarations.Collect());
 
             // Generate the source using the compilation and classes
             context.RegisterSourceOutput(compilationAndEnums,
@@ -59,9 +60,7 @@ namespace DiscriminatedUnionGenerator
             return node is ClassDeclarationSyntax m && m.AttributeLists.Count > 0;
         }
 
-        private const string CaseAttributeName = "DiscriminatedUnionGenerator.DiscriminatedUnionCaseAttribute";
-
-        static ClassDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
+        private static ClassDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
         {
             // we know the node is a EnumDeclarationSyntax thanks to IsSyntaxTargetForGeneration
             var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
@@ -93,7 +92,7 @@ namespace DiscriminatedUnionGenerator
             return null;
         }
 
-        static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax> classes, SourceProductionContext context)
+        private static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax> classes, SourceProductionContext context)
         {
             if (classes.IsDefaultOrEmpty)
             {
@@ -102,25 +101,25 @@ namespace DiscriminatedUnionGenerator
             }
 
             // I'm not sure if this is actually necessary, but `[LoggerMessage]` does it, so seems like a good idea!
-            IEnumerable<ClassDeclarationSyntax> distinctEnums = classes.Distinct();
+            IEnumerable<ClassDeclarationSyntax> distinctClasses = classes.Distinct();
 
-            // Convert each EnumDeclarationSyntax to an EnumToGenerate
-            List<EnumToGenerate> enumsToGenerate = GetTypesToGenerate(compilation, distinctEnums, context.CancellationToken);
+            // Convert each EnumDeclarationSyntax to an UnionsToGenerate
+            List<UnionsToGenerate> enumsToGenerate = GetTypesToGenerate(compilation, distinctClasses, context.CancellationToken);
 
             // If there were errors in the EnumDeclarationSyntax, we won't create an
-            // EnumToGenerate for it, so make sure we have something to generate
+            // UnionsToGenerate for it, so make sure we have something to generate
             if (enumsToGenerate.Count > 0)
             {
                 // generate the source code and add it to the output
                 string result = GenerateExtensionClass(enumsToGenerate);
-                context.AddSource("EnumExtensions.g.cs", SourceText.From(result, Encoding.UTF8));
+                context.AddSource("DiscriminatedUnions.g.cs", SourceText.From(result, Encoding.UTF8));
             }
         }
 
-        static List<EnumToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<ClassDeclarationSyntax> enums, CancellationToken ct)
+        static List<UnionsToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<ClassDeclarationSyntax> enums, CancellationToken ct)
         {
             // Create a list to hold our output
-            var enumsToGenerate = new List<EnumToGenerate>();
+            var enumsToGenerate = new List<UnionsToGenerate>();
             // Get the semantic representation of our marker attribute 
             INamedTypeSymbol? enumAttribute = compilation.GetTypeByMetadataName(CaseAttributeName);
 
@@ -161,51 +160,44 @@ namespace DiscriminatedUnionGenerator
                     }
                 }
 
-                // Create an EnumToGenerate for use in the generation phase
-                enumsToGenerate.Add(new EnumToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumName, members));
+                // Create an UnionsToGenerate for use in the generation phase
+                enumsToGenerate.Add(new UnionsToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumName, members));
             }
 
             return enumsToGenerate;
         }
 
-        public static string GenerateExtensionClass(List<EnumToGenerate> enumsToGenerate)
+        public static string GenerateExtensionClass(List<UnionsToGenerate> unionsToGenerate)
         {
             var sb = new StringBuilder();
 
-            foreach (var enumToGenerate in enumsToGenerate)
+            foreach (var unionToGenerate in unionsToGenerate)
             {
-                if (!string.IsNullOrWhiteSpace(enumToGenerate.TypeNamespace))
+                if (!string.IsNullOrWhiteSpace(unionToGenerate.TypeNamespace))
                 {
                     sb.Append($@"
-namespace {enumToGenerate.TypeNamespace}
-{{
-    public static partial class EnumExtensions
+namespace {unionToGenerate.TypeNamespace}
+{{");
+                }
+
+                sb.Append($@"    partial class {unionToGenerate.TypeName}
     {{");
-                }
 
-                sb.Append(@"
-                public static string ToStringFast(this ").Append(enumToGenerate.Name).Append(@" value)
-                    => value switch
-                    {");
-                foreach (var member in enumToGenerate.Values)
+                foreach (var caseData in unionToGenerate.Cases)
                 {
-                    sb.Append(@"
-                ").Append(enumToGenerate.Name).Append('.').Append(member)
-                        .Append(" => nameof(")
-                        .Append(enumToGenerate.Name).Append('.').Append(member).Append("),");
+                    sb.AppendLine($"        public {caseData.Type.FullName} {caseData.Name ?? caseData.Type.FullName} {{ get; }}");
+                    sb.AppendLine();
                 }
 
-                sb.Append(@"
-                    _ => value.ToString(),
-                };
-");
+                sb.AppendLine("    }");
 
-                if (!string.IsNullOrWhiteSpace(enumToGenerate.TypeNamespace))
+                if (!string.IsNullOrWhiteSpace(unionToGenerate.TypeNamespace))
                 {
-                    sb.Append(@"
-    }
-}");
+                    sb.AppendLine("}");
                 }
+
+                sb.AppendLine();
+                sb.AppendLine();
             }
 
             return sb.ToString();
@@ -213,18 +205,32 @@ namespace {enumToGenerate.TypeNamespace}
     }
 
 
-    public readonly struct EnumToGenerate
+    public readonly struct UnionsToGenerate
     {
-        public string? TypeNamespace { get; }
-        public string Name { get; }
-        public List<string> Values { get; }
-
-        public EnumToGenerate(string? typeNamespace, string name, List<string> values)
+        public UnionsToGenerate(string? typeNamespace, string typeName, List<CaseData> cases)
         {
             TypeNamespace = typeNamespace;
-            Name = name;
-            Values = values;
-
+            TypeName = typeName;
+            Cases = cases;
         }
+
+        public string? TypeNamespace { get; }
+
+        public string TypeName { get; }
+
+        public List<CaseData> Cases { get; }
+    }
+
+    public readonly struct CaseData
+    {
+        public CaseData(Type type, string? name)
+        {
+            Type = type;
+            Name = name;
+        }
+
+        public Type Type { get; }
+
+        public string? Name { get; }
     }
 }

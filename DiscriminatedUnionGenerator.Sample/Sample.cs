@@ -7,9 +7,13 @@ using DiscriminatedUnionGenerator;
 
 namespace DiscriminatedUnionGenerator.Sample
 {
-    [DiscriminatedUnionCase(typeof(object))]
+    [DiscriminatedUnionCase(typeof(NotFound))]
     [DiscriminatedUnionCase(typeof(object), "Test")]
-    public sealed class Sample
+    [DiscriminatedUnionCase(typeof(Duplicate))]
+    public sealed partial class Sample
     {
     }
+
+    public sealed record NotFound;
+    public sealed record Duplicate(string Data);
 }
