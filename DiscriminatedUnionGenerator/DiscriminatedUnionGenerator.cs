@@ -161,7 +161,7 @@ namespace DiscriminatedUnionGenerator
                 }
 
                 // Create an UnionsToGenerate for use in the generation phase
-                enumsToGenerate.Add(new UnionsToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumName, members));
+                enumsToGenerate.Add(new UnionsToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumSymbol.Name, new List<CaseData>()));
             }
 
             return enumsToGenerate;
@@ -170,17 +170,18 @@ namespace DiscriminatedUnionGenerator
         public static string GenerateExtensionClass(List<UnionsToGenerate> unionsToGenerate)
         {
             var sb = new StringBuilder();
+            sb.AppendLine("#nullable enable");
+            sb.AppendLine();
 
             foreach (var unionToGenerate in unionsToGenerate)
             {
                 if (!string.IsNullOrWhiteSpace(unionToGenerate.TypeNamespace))
                 {
-                    sb.Append($@"
-namespace {unionToGenerate.TypeNamespace}
+                    sb.AppendLine($@"namespace {unionToGenerate.TypeNamespace}
 {{");
                 }
 
-                sb.Append($@"    partial class {unionToGenerate.TypeName}
+                sb.AppendLine($@"    partial class {unionToGenerate.TypeName}
     {{");
 
                 foreach (var caseData in unionToGenerate.Cases)
