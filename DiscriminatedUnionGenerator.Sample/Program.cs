@@ -4,9 +4,15 @@ namespace DiscriminatedUnionGenerator.Sample
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("test");
-            var s = new Sample("  ");
-            //s.ToStringFast();
+            var sample = new Sample(new Duplicate("DUPL"));
+            var str = sample.Value switch
+            {
+                NotFound notFound => "notFound",
+                string s => s,
+                Duplicate duplicate => duplicate.Data,
+                _ => "Unknown"
+            };
+            Console.WriteLine(str);
         }
     }
 }

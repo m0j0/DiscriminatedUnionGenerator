@@ -6,7 +6,7 @@ namespace DiscriminatedUnionGenerator.Sample
     {
         private readonly int _tag;
         private readonly DiscriminatedUnionGenerator.Sample.NotFound? _case0;
-        private readonly object? _case1;
+        private readonly string? _case1;
         private readonly DiscriminatedUnionGenerator.Sample.Duplicate? _case2;
 
         public Sample(DiscriminatedUnionGenerator.Sample.NotFound NotFound)
@@ -15,10 +15,10 @@ namespace DiscriminatedUnionGenerator.Sample
             _case0 = NotFound;
         }
 
-        public Sample(object Test2)
+        public Sample(string Str)
         {
             _tag = 1;
-            _case1 = Test2;
+            _case1 = Str;
         }
 
         public Sample(DiscriminatedUnionGenerator.Sample.Duplicate Duplicate)
@@ -28,11 +28,11 @@ namespace DiscriminatedUnionGenerator.Sample
         }
 
         public bool IsNotFound => _tag == 0;
-        public bool IsTest2 => _tag == 1;
+        public bool IsStr => _tag == 1;
         public bool IsDuplicate => _tag == 2;
 
         public DiscriminatedUnionGenerator.Sample.NotFound AsNotFound => _tag == 0 ? _case0! : throw new InvalidOperationException();
-        public object AsTest2 => _tag == 1 ? _case1! : throw new InvalidOperationException();
+        public string AsStr => _tag == 1 ? _case1! : throw new InvalidOperationException();
         public DiscriminatedUnionGenerator.Sample.Duplicate AsDuplicate => _tag == 2 ? _case2! : throw new InvalidOperationException();
 
         public object Value => _tag switch
