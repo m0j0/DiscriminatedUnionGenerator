@@ -31,12 +31,17 @@ namespace DiscriminatedUnionGenerator.Sample
         public bool IsTest2 => _tag == 1;
         public bool IsDuplicate => _tag == 2;
 
-        public DiscriminatedUnionGenerator.Sample.NotFound NotFound { get; }
+        public DiscriminatedUnionGenerator.Sample.NotFound AsNotFound => _tag == 0 ? _case0! : throw new InvalidOperationException();
+        public object AsTest2 => _tag == 1 ? _case1! : throw new InvalidOperationException();
+        public DiscriminatedUnionGenerator.Sample.Duplicate AsDuplicate => _tag == 2 ? _case2! : throw new InvalidOperationException();
 
-        public object Test2 { get; }
-
-        public DiscriminatedUnionGenerator.Sample.Duplicate Duplicate { get; }
-
+        public object Value => _tag switch
+        {
+            0 => _case0!,
+            1 => _case1!,
+            2 => _case2!,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }
 

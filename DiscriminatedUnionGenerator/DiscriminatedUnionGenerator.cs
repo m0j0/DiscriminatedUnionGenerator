@@ -249,11 +249,29 @@ namespace DiscriminatedUnionGenerator
 
                 #endregion
 
-                foreach (var caseData in union.Cases)
+                #region as
+
+                for (var i = 0; i < union.Cases.Count; i++)
                 {
-                    sb.AppendLine($"        public {caseData.Type} {caseData.Name} {{ get; }}");
-                    sb.AppendLine();
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == {i} ? _case{i}! : throw new InvalidOperationException();");
                 }
+                sb.AppendLine();
+
+                #endregion
+
+                #region value
+
+                sb.AppendLine($"        public object Value => _tag switch");
+                sb.AppendLine("        {");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    sb.AppendLine($"            {i} => _case{i}!,");
+                }
+                sb.AppendLine($"            _ => throw new ArgumentOutOfRangeException()");
+                sb.AppendLine("        };");
+
+                #endregion
 
                 sb.AppendLine("    }");
 

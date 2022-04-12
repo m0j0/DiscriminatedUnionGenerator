@@ -5,7 +5,7 @@ namespace DiscriminatedUnionGenerator.Sample
         public static void Main(string[] args)
         {
             Console.WriteLine("test");
-            var s = new Sample(" ");
+            var s = new Sample("  ");
             //s.ToStringFast();
         }
     }
