@@ -10,7 +10,7 @@ namespace DiscriminatedUnionGenerator.Sample
     [DiscriminatedUnionCase(typeof(NotFound))]
     [DiscriminatedUnionCase(typeof(object), "Test2")] 
     [DiscriminatedUnionCase(typeof(Duplicate))]
-    [DiscriminatedUnionCase(typeof(Duplicate), "Duplicate2")]
+    // [DiscriminatedUnionCase(typeof(Duplicate), "Duplicate2")]
     public sealed partial class Sample
     {
     }

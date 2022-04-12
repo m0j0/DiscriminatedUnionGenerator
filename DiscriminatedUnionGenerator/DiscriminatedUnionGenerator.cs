@@ -196,18 +196,60 @@ namespace DiscriminatedUnionGenerator
             sb.AppendLine("#nullable enable");
             sb.AppendLine();
 
-            foreach (var unionToGenerate in unionsToGenerate)
+            foreach (var union in unionsToGenerate)
             {
-                if (!string.IsNullOrWhiteSpace(unionToGenerate.TypeNamespace))
+                if (!string.IsNullOrWhiteSpace(union.TypeNamespace))
                 {
-                    sb.AppendLine($@"namespace {unionToGenerate.TypeNamespace}
+                    sb.AppendLine($@"namespace {union.TypeNamespace}
 {{");
                 }
 
-                sb.AppendLine($@"    partial class {unionToGenerate.TypeName}
+                sb.AppendLine($@"    partial class {union.TypeName}
     {{");
 
-                foreach (var caseData in unionToGenerate.Cases)
+                #region fields
+
+                sb.AppendLine($"        private readonly int _tag;");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    sb.AppendLine($"        private readonly {union.Cases[i].Type}? _case{i};");
+                }
+                sb.AppendLine();
+
+                #endregion
+
+                #region ctors
+
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"        public {union.TypeName}({caseData.Type} {caseData.Name})");
+                    sb.AppendLine("        {");
+                    sb.AppendLine($"            _tag = {i};");
+                    sb.AppendLine($"            _case{i} = {caseData.Name};");
+                    sb.AppendLine("        }");
+
+                    if (i != union.Cases.Count - 1)
+                    {
+                        sb.AppendLine();
+                    }
+                }
+                sb.AppendLine();
+
+                #endregion
+
+                #region is
+
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"        public bool Is{caseData.Name} => _tag == {i};");
+                }
+                sb.AppendLine();
+
+                #endregion
+
+                foreach (var caseData in union.Cases)
                 {
                     sb.AppendLine($"        public {caseData.Type} {caseData.Name} {{ get; }}");
                     sb.AppendLine();
@@ -215,7 +257,7 @@ namespace DiscriminatedUnionGenerator
 
                 sb.AppendLine("    }");
 
-                if (!string.IsNullOrWhiteSpace(unionToGenerate.TypeNamespace))
+                if (!string.IsNullOrWhiteSpace(union.TypeNamespace))
                 {
                     sb.AppendLine("}");
                 }
