@@ -223,10 +223,11 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"        public {union.TypeName}({caseData.Type} {caseData.Name})");
+                    var loweredName = FirstCharToLowerCase(caseData.Name);
+                    sb.AppendLine($"        public {union.TypeName}({caseData.Type} {loweredName})");
                     sb.AppendLine("        {");
                     sb.AppendLine($"            _tag = {i};");
-                    sb.AppendLine($"            _case{i} = {caseData.Name};");
+                    sb.AppendLine($"            _case{i} = {loweredName};");
                     sb.AppendLine("        }");
 
                     if (i != union.Cases.Count - 1)
@@ -285,6 +286,16 @@ namespace DiscriminatedUnionGenerator
             }
 
             return sb.ToString();
+        }
+
+        private static string FirstCharToLowerCase(string str)
+        {
+            if (!string.IsNullOrEmpty(str) && char.IsUpper(str[0]))
+            {
+                return str.Length == 1 ? char.ToLower(str[0]).ToString() : char.ToLower(str[0]) + str.Substring(1);
+            }
+
+            return str;
         }
     }
 

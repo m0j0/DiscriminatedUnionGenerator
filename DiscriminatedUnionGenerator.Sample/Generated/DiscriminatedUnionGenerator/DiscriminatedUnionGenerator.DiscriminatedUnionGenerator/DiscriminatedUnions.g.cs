@@ -9,22 +9,22 @@ namespace DiscriminatedUnionGenerator.Sample
         private readonly string? _case1;
         private readonly DiscriminatedUnionGenerator.Sample.Duplicate? _case2;
 
-        public Sample(DiscriminatedUnionGenerator.Sample.NotFound NotFound)
+        public Sample(DiscriminatedUnionGenerator.Sample.NotFound notFound)
         {
             _tag = 0;
-            _case0 = NotFound;
+            _case0 = notFound;
         }
 
-        public Sample(string Str)
+        public Sample(string str)
         {
             _tag = 1;
-            _case1 = Str;
+            _case1 = str;
         }
 
-        public Sample(DiscriminatedUnionGenerator.Sample.Duplicate Duplicate)
+        public Sample(DiscriminatedUnionGenerator.Sample.Duplicate duplicate)
         {
             _tag = 2;
-            _case2 = Duplicate;
+            _case2 = duplicate;
         }
 
         public bool IsNotFound => _tag == 0;
