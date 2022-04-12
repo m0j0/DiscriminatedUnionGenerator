@@ -137,14 +137,54 @@ namespace DiscriminatedUnionGenerator
 
                 // Get the semantic representation of the enum syntax
                 SemanticModel semanticModel = compilation.GetSemanticModel(classDeclarationSyntax.SyntaxTree);
-                if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol enumSymbol)
+                if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol classSymbol)
                 {
                     // something went wrong, bail out
                     continue;
                 }
 
 
-                unionsToGenerates.Add(new UnionToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumSymbol.Name, new List<CaseData>()));
+                var cases = new List<CaseData>();
+
+                foreach (AttributeData attributeData in classSymbol.GetAttributes())
+                {
+                    if (!caseAttribute.Equals(attributeData.AttributeClass, SymbolEqualityComparer.Default))
+                    {
+                        // This isn't the [EnumExtensions] attribute
+                        continue;
+                    }
+
+                    // This is the right attribute, check the constructor arguments
+                    if (!attributeData.ConstructorArguments.IsEmpty)
+                    {
+                        ImmutableArray<TypedConstant> args = attributeData.ConstructorArguments;
+
+                        // make sure we don't have any errors
+                        foreach (TypedConstant arg in args)
+                        {
+                            if (arg.Kind == TypedConstantKind.Error)
+                            {
+                                // have an error, so don't try and do any generation
+                                break;
+                            }
+                        }
+
+                        if (args.Length == 1)
+                        {
+                            var type = (INamedTypeSymbol)args[0].Value;
+                            cases.Add(new CaseData(type.ToString(), type.Name));
+                        }
+                        else if (args.Length == 2)
+                        {
+                            var type = args[0].Value?.ToString() ?? "NOTYPE";
+                            var name = args[1].Value?.ToString() ?? "NONAME";
+                            cases.Add(new CaseData(type, name));
+                        }
+                    }
+                }
+
+
+                unionsToGenerates.Add(new UnionToGenerate(classSymbol.ContainingNamespace?.ToString(), classSymbol.Name, cases));
             }
 
             return unionsToGenerates;
@@ -169,7 +209,7 @@ namespace DiscriminatedUnionGenerator
 
                 foreach (var caseData in unionToGenerate.Cases)
                 {
-                    sb.AppendLine($"        public {caseData.Type.FullName} {caseData.Name ?? caseData.Type.FullName} {{ get; }}");
+                    sb.AppendLine($"        public {caseData.Type} {caseData.Name} {{ get; }}");
                     sb.AppendLine();
                 }
 
@@ -207,14 +247,14 @@ namespace DiscriminatedUnionGenerator
 
     public readonly struct CaseData
     {
-        public CaseData(Type type, string? name)
+        public CaseData(string type, string name)
         {
             Type = type;
             Name = name;
         }
 
-        public Type Type { get; }
+        public string Type { get; }
 
-        public string? Name { get; }
+        public string Name { get; }
     }
 }
