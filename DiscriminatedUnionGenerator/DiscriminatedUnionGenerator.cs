@@ -104,7 +104,7 @@ namespace DiscriminatedUnionGenerator
             IEnumerable<ClassDeclarationSyntax> distinctClasses = classes.Distinct();
 
             // Convert each EnumDeclarationSyntax to an UnionsToGenerate
-            List<UnionsToGenerate> enumsToGenerate = GetTypesToGenerate(compilation, distinctClasses, context.CancellationToken);
+            var enumsToGenerate = GetTypesToGenerate(compilation, distinctClasses, context.CancellationToken);
 
             // If there were errors in the EnumDeclarationSyntax, we won't create an
             // UnionsToGenerate for it, so make sure we have something to generate
@@ -116,58 +116,41 @@ namespace DiscriminatedUnionGenerator
             }
         }
 
-        static List<UnionsToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<ClassDeclarationSyntax> enums, CancellationToken ct)
+        private static IReadOnlyList<UnionToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<ClassDeclarationSyntax> classes, CancellationToken ct)
         {
-            // Create a list to hold our output
-            var enumsToGenerate = new List<UnionsToGenerate>();
             // Get the semantic representation of our marker attribute 
-            INamedTypeSymbol? enumAttribute = compilation.GetTypeByMetadataName(CaseAttributeName);
+            INamedTypeSymbol? caseAttribute = compilation.GetTypeByMetadataName(CaseAttributeName);
 
-            if (enumAttribute == null)
+            if (caseAttribute == null)
             {
                 // If this is null, the compilation couldn't find the marker attribute type
                 // which suggests there's something very wrong! Bail out..
-                return enumsToGenerate;
+                return Array.Empty<UnionToGenerate>();
             }
 
-            foreach (ClassDeclarationSyntax enumDeclarationSyntax in enums)
+            var unionsToGenerates = new List<UnionToGenerate>();
+
+            foreach (ClassDeclarationSyntax classDeclarationSyntax in classes)
             {
                 // stop if we're asked to
                 ct.ThrowIfCancellationRequested();
 
                 // Get the semantic representation of the enum syntax
-                SemanticModel semanticModel = compilation.GetSemanticModel(enumDeclarationSyntax.SyntaxTree);
-                if (semanticModel.GetDeclaredSymbol(enumDeclarationSyntax) is not INamedTypeSymbol enumSymbol)
+                SemanticModel semanticModel = compilation.GetSemanticModel(classDeclarationSyntax.SyntaxTree);
+                if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol enumSymbol)
                 {
                     // something went wrong, bail out
                     continue;
                 }
 
-                // Get the full type name of the enum e.g. Colour, 
-                // or OuterClass<T>.Colour if it was nested in a generic type (for example)
-                string enumName = enumSymbol.ToString();
 
-                // Get all the members in the enum
-                ImmutableArray<ISymbol> enumMembers = enumSymbol.GetMembers();
-                var members = new List<string>(enumMembers.Length);
-
-                // Get all the fields from the enum, and add their name to the list
-                foreach (ISymbol member in enumMembers)
-                {
-                    if (member is IFieldSymbol field && field.ConstantValue is not null)
-                    {
-                        members.Add(member.Name);
-                    }
-                }
-
-                // Create an UnionsToGenerate for use in the generation phase
-                enumsToGenerate.Add(new UnionsToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumSymbol.Name, new List<CaseData>()));
+                unionsToGenerates.Add(new UnionToGenerate(enumSymbol.ContainingNamespace?.ToString(), enumSymbol.Name, new List<CaseData>()));
             }
 
-            return enumsToGenerate;
+            return unionsToGenerates;
         }
 
-        public static string GenerateExtensionClass(List<UnionsToGenerate> unionsToGenerate)
+        public static string GenerateExtensionClass(IReadOnlyList<UnionToGenerate> unionsToGenerate)
         {
             var sb = new StringBuilder();
             sb.AppendLine("#nullable enable");
@@ -206,9 +189,9 @@ namespace DiscriminatedUnionGenerator
     }
 
 
-    public readonly struct UnionsToGenerate
+    public readonly struct UnionToGenerate
     {
-        public UnionsToGenerate(string? typeNamespace, string typeName, List<CaseData> cases)
+        public UnionToGenerate(string? typeNamespace, string typeName, List<CaseData> cases)
         {
             TypeNamespace = typeNamespace;
             TypeName = typeName;
