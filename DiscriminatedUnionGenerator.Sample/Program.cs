@@ -4,12 +4,12 @@ namespace DiscriminatedUnionGenerator.Sample
     {
         public static void Main(string[] args)
         {
-            var sample = new Sample(new Duplicate("DUPL"));
-            var str = sample.Value switch
+            var sample = new Sample(new Duplicate("DUPL "));
+            var str = sample.Tag switch
             {
-                NotFound notFound => "notFound",
-                string s => s,
-                Duplicate duplicate => duplicate.Data,
+                Sample.Case.NotFound => "notFound",
+                Sample.Case.Str => sample.AsStr,
+                Sample.Case.Duplicate => sample.AsDuplicate.Data,
                 _ => "Unknown"
             };
             Console.WriteLine(str);

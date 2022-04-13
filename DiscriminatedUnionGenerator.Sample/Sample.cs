@@ -8,10 +8,10 @@ using DiscriminatedUnionGenerator;
 namespace DiscriminatedUnionGenerator.Sample
 {
     [DiscriminatedUnionCase(typeof(NotFound))]
-    //[DiscriminatedUnionCase(typeof(object), "Test2")] 
+    [DiscriminatedUnionCase(typeof(object), "Test2")] 
     [DiscriminatedUnionCase(typeof(string), "Str")] 
     [DiscriminatedUnionCase(typeof(Duplicate))]
-    //[DiscriminatedUnionCase(typeof(Duplicate), "Duplicate2")]
+    //[DiscriminatedUnionCase(typeof(int), "Integ")]
     public sealed partial class Sample
     {
     }

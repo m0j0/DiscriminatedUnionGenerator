@@ -207,12 +207,25 @@ namespace DiscriminatedUnionGenerator
                 sb.AppendLine($@"    partial class {union.TypeName}
     {{");
 
-                #region fields
+                #region enum
 
-                sb.AppendLine($"        private readonly int _tag;");
+                sb.AppendLine($"        public enum Case");
+                sb.AppendLine("        {");
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
-                    sb.AppendLine($"        private readonly {union.Cases[i].Type}? _case{i};");
+                    sb.AppendLine($"            {union.Cases[i].Name} = {i + 1},");
+                }
+                sb.AppendLine("        }");
+                sb.AppendLine();
+
+                #endregion
+
+                #region fields
+
+                sb.AppendLine($"        private readonly Case _tag;");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    sb.AppendLine($"        private readonly {union.Cases[i].Type}? _case{i + 1};");
                 }
                 sb.AppendLine();
 
@@ -226,8 +239,8 @@ namespace DiscriminatedUnionGenerator
                     var loweredName = FirstCharToLowerCase(caseData.Name);
                     sb.AppendLine($"        public {union.TypeName}({caseData.Type} {loweredName})");
                     sb.AppendLine("        {");
-                    sb.AppendLine($"            _tag = {i};");
-                    sb.AppendLine($"            _case{i} = {loweredName};");
+                    sb.AppendLine($"            _tag = Case.{caseData.Name};");
+                    sb.AppendLine($"            _case{i + 1} = {loweredName};");
                     sb.AppendLine("        }");
 
                     if (i != union.Cases.Count - 1)
@@ -244,7 +257,7 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"        public bool Is{caseData.Name} => _tag == {i};");
+                    sb.AppendLine($"        public bool Is{caseData.Name} => _tag == Case.{caseData.Name};");
                 }
                 sb.AppendLine();
 
@@ -255,7 +268,7 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == {i} ? _case{i}! : throw new InvalidOperationException();");
+                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == Case.{caseData.Name} ? _case{i + 1}! : throw new InvalidOperationException();");
                 }
                 sb.AppendLine();
 
@@ -263,14 +276,7 @@ namespace DiscriminatedUnionGenerator
 
                 #region value
 
-                sb.AppendLine($"        public object Value => _tag switch");
-                sb.AppendLine("        {");
-                for (var i = 0; i < union.Cases.Count; i++)
-                {
-                    sb.AppendLine($"            {i} => _case{i}!,");
-                }
-                sb.AppendLine($"            _ => throw new ArgumentOutOfRangeException()");
-                sb.AppendLine("        };");
+                sb.AppendLine($"        public Case Tag => _tag;");
 
                 #endregion
 

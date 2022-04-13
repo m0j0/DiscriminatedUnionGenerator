@@ -4,44 +4,55 @@ namespace DiscriminatedUnionGenerator.Sample
 {
     partial class Sample
     {
-        private readonly int _tag;
-        private readonly DiscriminatedUnionGenerator.Sample.NotFound? _case0;
-        private readonly string? _case1;
-        private readonly DiscriminatedUnionGenerator.Sample.Duplicate? _case2;
+        public enum Case
+        {
+            NotFound = 1,
+            Test2 = 2,
+            Str = 3,
+            Duplicate = 4,
+        }
+
+        private readonly Case _tag;
+        private readonly DiscriminatedUnionGenerator.Sample.NotFound? _case1;
+        private readonly object? _case2;
+        private readonly string? _case3;
+        private readonly DiscriminatedUnionGenerator.Sample.Duplicate? _case4;
 
         public Sample(DiscriminatedUnionGenerator.Sample.NotFound notFound)
         {
-            _tag = 0;
-            _case0 = notFound;
+            _tag = Case.NotFound;
+            _case1 = notFound;
+        }
+
+        public Sample(object test2)
+        {
+            _tag = Case.Test2;
+            _case2 = test2;
         }
 
         public Sample(string str)
         {
-            _tag = 1;
-            _case1 = str;
+            _tag = Case.Str;
+            _case3 = str;
         }
 
         public Sample(DiscriminatedUnionGenerator.Sample.Duplicate duplicate)
         {
-            _tag = 2;
-            _case2 = duplicate;
+            _tag = Case.Duplicate;
+            _case4 = duplicate;
         }
 
-        public bool IsNotFound => _tag == 0;
-        public bool IsStr => _tag == 1;
-        public bool IsDuplicate => _tag == 2;
+        public bool IsNotFound => _tag == Case.NotFound;
+        public bool IsTest2 => _tag == Case.Test2;
+        public bool IsStr => _tag == Case.Str;
+        public bool IsDuplicate => _tag == Case.Duplicate;
 
-        public DiscriminatedUnionGenerator.Sample.NotFound AsNotFound => _tag == 0 ? _case0! : throw new InvalidOperationException();
-        public string AsStr => _tag == 1 ? _case1! : throw new InvalidOperationException();
-        public DiscriminatedUnionGenerator.Sample.Duplicate AsDuplicate => _tag == 2 ? _case2! : throw new InvalidOperationException();
+        public DiscriminatedUnionGenerator.Sample.NotFound AsNotFound => _tag == Case.NotFound ? _case1! : throw new InvalidOperationException();
+        public object AsTest2 => _tag == Case.Test2 ? _case2! : throw new InvalidOperationException();
+        public string AsStr => _tag == Case.Str ? _case3! : throw new InvalidOperationException();
+        public DiscriminatedUnionGenerator.Sample.Duplicate AsDuplicate => _tag == Case.Duplicate ? _case4! : throw new InvalidOperationException();
 
-        public object Value => _tag switch
-        {
-            0 => _case0!,
-            1 => _case1!,
-            2 => _case2!,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        public Case Tag => _tag;
     }
 }
 
