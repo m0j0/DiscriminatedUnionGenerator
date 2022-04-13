@@ -280,6 +280,30 @@ namespace DiscriminatedUnionGenerator
 
                 #endregion
 
+                #region match
+
+                sb.AppendLine("        public TResult Match<TResult>(");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.Append($"            System.Func<{caseData.Type}, TResult> func{caseData.Name}");
+                    sb.AppendLine(i == union.Cases.Count - 1 ? ")" : ",");
+                }
+                sb.AppendLine("        {");
+                sb.AppendLine("            return _tag switch");
+                sb.AppendLine("            {");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"                case Case.{caseData.Name} => func{caseData.Name}(_value{caseData.Name}),");
+                }
+                sb.AppendLine("                _ => throw new System.InvalidOperationException();");
+                sb.AppendLine("            }");
+                sb.AppendLine("        }");
+                sb.AppendLine();
+
+                #endregion
+
                 #region implicit
 
                 for (var i = 0; i < union.Cases.Count; i++)
