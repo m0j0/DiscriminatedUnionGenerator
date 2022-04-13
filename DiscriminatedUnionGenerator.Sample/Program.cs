@@ -4,7 +4,7 @@ namespace DiscriminatedUnionGenerator.Sample
     {
         public static void Main(string[] args)
         {
-            var sample = new Sample(new Duplicate("DUPL "));
+            var sample = CreateSample();
             var str = sample.Tag switch
             {
                 Sample.Case.NotFound => "notFound",
@@ -13,6 +13,15 @@ namespace DiscriminatedUnionGenerator.Sample
                 _ => "Unknown"
             };
             Console.WriteLine(str);
+
+            var sample2 = new Sample("text");
+            var strFromSample = (string) sample2;
+            Console.WriteLine(strFromSample);
+        }
+
+        private static Sample CreateSample()
+        {
+            return new Duplicate("DUPL  ");
         }
     }
 }

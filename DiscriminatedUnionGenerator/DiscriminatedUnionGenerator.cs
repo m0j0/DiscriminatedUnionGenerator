@@ -236,11 +236,10 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    var loweredName = FirstCharToLowerCase(caseData.Name);
-                    sb.AppendLine($"        public {union.TypeName}({caseData.Type} {loweredName})");
+                    sb.AppendLine($"        public {union.TypeName}({caseData.Type} {caseData.LoweredName})");
                     sb.AppendLine("        {");
                     sb.AppendLine($"            _tag = Case.{caseData.Name};");
-                    sb.AppendLine($"            _case{i + 1} = {loweredName};");
+                    sb.AppendLine($"            _case{i + 1} = {caseData.LoweredName};");
                     sb.AppendLine("        }");
 
                     if (i != union.Cases.Count - 1)
@@ -274,9 +273,31 @@ namespace DiscriminatedUnionGenerator
 
                 #endregion
 
-                #region value
+                #region tag
 
                 sb.AppendLine($"        public Case Tag => _tag;");
+                sb.AppendLine();
+
+                #endregion
+
+                #region implicit
+
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"        public static implicit operator {union.TypeName}({caseData.Type} {caseData.LoweredName}) => new {union.TypeName}({caseData.LoweredName});");
+                }
+                sb.AppendLine();
+
+                #endregion
+
+                #region explicit
+
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"        public static explicit operator {caseData.Type}({union.TypeName} {union.LoweredTypeName}) => {union.LoweredTypeName}.As{caseData.Name};");
+                }
 
                 #endregion
 
@@ -293,16 +314,6 @@ namespace DiscriminatedUnionGenerator
 
             return sb.ToString();
         }
-
-        private static string FirstCharToLowerCase(string str)
-        {
-            if (!string.IsNullOrEmpty(str) && char.IsUpper(str[0]))
-            {
-                return str.Length == 1 ? char.ToLower(str[0]).ToString() : char.ToLower(str[0]) + str.Substring(1);
-            }
-
-            return str;
-        }
     }
 
 
@@ -312,12 +323,15 @@ namespace DiscriminatedUnionGenerator
         {
             TypeNamespace = typeNamespace;
             TypeName = typeName;
+            LoweredTypeName = Extensions.FirstCharToLowerCase(typeName);
             Cases = cases;
         }
 
         public string? TypeNamespace { get; }
 
         public string TypeName { get; }
+
+        public string LoweredTypeName { get; }
 
         public List<CaseData> Cases { get; }
     }
@@ -328,10 +342,26 @@ namespace DiscriminatedUnionGenerator
         {
             Type = type;
             Name = name;
+            LoweredName = Extensions.FirstCharToLowerCase(name);
         }
 
         public string Type { get; }
 
         public string Name { get; }
+
+        public string LoweredName { get; }
+    }
+
+    public static class Extensions
+    {
+        public static string FirstCharToLowerCase(string str)
+        {
+            if (!string.IsNullOrEmpty(str) && char.IsUpper(str[0]))
+            {
+                return str.Length == 1 ? char.ToLower(str[0]).ToString() : char.ToLower(str[0]) + str.Substring(1);
+            }
+
+            return str;
+        }
     }
 }
