@@ -225,7 +225,7 @@ namespace DiscriminatedUnionGenerator
                 sb.AppendLine($"        private readonly Case _tag;");
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
-                    sb.AppendLine($"        private readonly {union.Cases[i].Type}? _case{i + 1};");
+                    sb.AppendLine($"        private readonly {union.Cases[i].Type}? _case{union.Cases[i].Name};");
                 }
                 sb.AppendLine();
 
@@ -239,7 +239,7 @@ namespace DiscriminatedUnionGenerator
                     sb.AppendLine($"        public {union.TypeName}({caseData.Type} {caseData.LoweredName})");
                     sb.AppendLine("        {");
                     sb.AppendLine($"            _tag = Case.{caseData.Name};");
-                    sb.AppendLine($"            _case{i + 1} = {caseData.LoweredName};");
+                    sb.AppendLine($"            _case{union.Cases[i].Name} = {caseData.LoweredName};");
                     sb.AppendLine("        }");
 
                     if (i != union.Cases.Count - 1)
@@ -267,7 +267,7 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == Case.{caseData.Name} ? _case{i + 1}! : throw new System.InvalidOperationException();");
+                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == Case.{caseData.Name} ? _case{union.Cases[i].Name}! : throw new System.InvalidOperationException();");
                 }
                 sb.AppendLine();
 
@@ -295,10 +295,34 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"                case Case.{caseData.Name} => func{caseData.Name}(_value{caseData.Name}),");
+                    sb.AppendLine($"                Case.{caseData.Name} => func{caseData.Name}(_case{caseData.Name}!),");
                 }
-                sb.AppendLine("                _ => throw new System.InvalidOperationException();");
-                sb.AppendLine("            }");
+                sb.AppendLine("                _ => throw new System.InvalidOperationException()");
+                sb.AppendLine("            };");
+                sb.AppendLine("        }");
+                sb.AppendLine();
+
+                #endregion
+
+                #region match async
+
+                sb.AppendLine("        public async System.Threading.Tasks.Task<TResult> MatchAsync<TResult>(");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.Append($"            System.Func<{caseData.Type}, System.Threading.Tasks.Task<TResult>> func{caseData.Name}");
+                    sb.AppendLine(i == union.Cases.Count - 1 ? ")" : ",");
+                }
+                sb.AppendLine("        {");
+                sb.AppendLine("            return _tag switch");
+                sb.AppendLine("            {");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"                Case.{caseData.Name} => await func{caseData.Name}(_case{caseData.Name}!).ConfigureAwait(false),");
+                }
+                sb.AppendLine("                _ => throw new System.InvalidOperationException()");
+                sb.AppendLine("            };");
                 sb.AppendLine("        }");
                 sb.AppendLine();
 
