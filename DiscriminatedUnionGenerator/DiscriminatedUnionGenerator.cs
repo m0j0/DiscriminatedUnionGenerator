@@ -267,7 +267,7 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == Case.{caseData.Name} ? _case{i + 1}! : throw new InvalidOperationException();");
+                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == Case.{caseData.Name} ? _case{i + 1}! : throw new System.InvalidOperationException();");
                 }
                 sb.AppendLine();
 

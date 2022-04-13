@@ -38,9 +38,9 @@ namespace DiscriminatedUnionGenerator.Sample
         public bool IsStr => _tag == Case.Str;
         public bool IsDuplicate => _tag == Case.Duplicate;
 
-        public DiscriminatedUnionGenerator.Sample.NotFound AsNotFound => _tag == Case.NotFound ? _case1! : throw new InvalidOperationException();
-        public string AsStr => _tag == Case.Str ? _case2! : throw new InvalidOperationException();
-        public DiscriminatedUnionGenerator.Sample.Duplicate AsDuplicate => _tag == Case.Duplicate ? _case3! : throw new InvalidOperationException();
+        public DiscriminatedUnionGenerator.Sample.NotFound AsNotFound => _tag == Case.NotFound ? _case1! : throw new System.InvalidOperationException();
+        public string AsStr => _tag == Case.Str ? _case2! : throw new System.InvalidOperationException();
+        public DiscriminatedUnionGenerator.Sample.Duplicate AsDuplicate => _tag == Case.Duplicate ? _case3! : throw new System.InvalidOperationException();
 
         public Case Tag => _tag;
 
