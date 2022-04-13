@@ -5,18 +5,18 @@ namespace DiscriminatedUnionGenerator
     [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct, AllowMultiple = true)]
     internal sealed class DiscriminatedUnionCaseAttribute : System.Attribute
     {
-        public DiscriminatedUnionCaseAttribute(Type type)
+        public DiscriminatedUnionCaseAttribute(System.Type type)
         {
             Type = type;
         }
 
-        public DiscriminatedUnionCaseAttribute(Type type, string? name)
+        public DiscriminatedUnionCaseAttribute(System.Type type, string name)
         {
             Type = type;
             Name = name;
         }
 
-        public Type Type { get; }
+        public System.Type Type { get; }
 
         public string? Name { get; }
     }
