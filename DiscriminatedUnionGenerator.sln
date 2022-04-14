@@ -7,7 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscriminatedUnionGenerator
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscriminatedUnionGenerator.Sample", "DiscriminatedUnionGenerator.Sample\DiscriminatedUnionGenerator.Sample.csproj", "{A75C2F07-60AF-4E56-95ED-1C3522014F4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscriminatedUnionGenerator.Tests", "DiscriminatedUnionGenerator.Tests\DiscriminatedUnionGenerator.Tests.csproj", "{D499AC7B-1D19-4E08-8315-6A9177B2F937}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscriminatedUnionGenerator.Tests", "DiscriminatedUnionGenerator.Tests\DiscriminatedUnionGenerator.Tests.csproj", "{D499AC7B-1D19-4E08-8315-6A9177B2F937}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{998B50B1-F53A-4E86-A0B1-558E93781854}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		global.json = global.json
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
