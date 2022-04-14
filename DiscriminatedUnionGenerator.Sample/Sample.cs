@@ -1,27 +1,33 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DiscriminatedUnionGenerator;
+namespace DiscriminatedUnionGenerator.Sample;
 
-namespace DiscriminatedUnionGenerator.Sample
+public sealed record NotFound;
+
+public sealed record Duplicate(string Data);
+
+[DiscriminatedUnionCase(typeof(NotFound))]
+//[DiscriminatedUnionCase(typeof(object), "Test2")] 
+[DiscriminatedUnionCase(typeof(string), "Str")]
+[DiscriminatedUnionCase(typeof(Duplicate))]
+//[DiscriminatedUnionCase(typeof(int), "Integ")]
+public sealed partial class SampleClass
 {
-    [DiscriminatedUnionCase(typeof(NotFound))]
-    //[DiscriminatedUnionCase(typeof(object), "Test2")] 
-    [DiscriminatedUnionCase(typeof(string), "Str")] 
-    [DiscriminatedUnionCase(typeof(Duplicate))]
-    //[DiscriminatedUnionCase(typeof(int), "Integ")]
-    public sealed partial class Sample
-    {
-    }
+}
 
-    public sealed record NotFound;
-    public sealed record Duplicate(string Data);
+[DiscriminatedUnionCase(typeof(NotFound))]
+[DiscriminatedUnionCase(typeof(string), "Str")]
+[DiscriminatedUnionCase(typeof(Duplicate))]
+public sealed partial record SampleRecord
+{
+}
 
+[DiscriminatedUnionCase(typeof(NotFound))]
+[DiscriminatedUnionCase(typeof(string), "Str")]
+[DiscriminatedUnionCase(typeof(Duplicate))]
+public readonly partial struct SampleStruct
+{
+}
 
-    [DiscriminatedUnionCase(typeof(NotFound))]
-    [DiscriminatedUnionCase(typeof(string), "Str")]
-    [DiscriminatedUnionCase(typeof(Duplicate))]
-    public readonly partial record struct SampleStructRecord;
-} 
+[DiscriminatedUnionCase(typeof(NotFound))]
+[DiscriminatedUnionCase(typeof(string), "Str")]
+[DiscriminatedUnionCase(typeof(Duplicate))]
+public readonly partial record struct SampleStructRecord;

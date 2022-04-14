@@ -60,7 +60,8 @@ namespace DiscriminatedUnionGenerator
         private static bool IsSyntaxTargetForGeneration(SyntaxNode node)
         {
             return node is ClassDeclarationSyntax c && c.AttributeLists.Count > 0 ||
-                   node is RecordDeclarationSyntax r && r.AttributeLists.Count > 0;
+                   node is RecordDeclarationSyntax r && r.AttributeLists.Count > 0 ||
+                   node is StructDeclarationSyntax s && s.AttributeLists.Count > 0;
         }
 
         private static TypeDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)

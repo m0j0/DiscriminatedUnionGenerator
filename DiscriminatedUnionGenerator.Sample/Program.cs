@@ -7,9 +7,9 @@ namespace DiscriminatedUnionGenerator.Sample
             var sample = CreateSample();
             var str = sample.Tag switch
             {
-                Sample.Case.NotFound => "notFound",
-                Sample.Case.Str => sample.AsStr,
-                Sample.Case.Duplicate => sample.AsDuplicate.Data,
+                SampleClass.Case.NotFound => "notFound",
+                SampleClass.Case.Str => sample.AsStr,
+                SampleClass.Case.Duplicate => sample.AsDuplicate.Data,
                 _ => "Unknown"
             };
             Console.WriteLine(str);
@@ -28,12 +28,12 @@ namespace DiscriminatedUnionGenerator.Sample
                     })
             );
 
-            var sample2 = new Sample("text");
+            var sample2 = new SampleRecord("text");
             var strFromSample = (string) sample2;
             Console.WriteLine(strFromSample);
         }
 
-        private static Sample CreateSample()
+        private static SampleClass CreateSample()
         {
             return new Duplicate("DUPL  ");
         }
