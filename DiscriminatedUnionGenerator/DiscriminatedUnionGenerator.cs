@@ -194,14 +194,14 @@ namespace DiscriminatedUnionGenerator
 
                         if (args.Length == 1)
                         {
-                            var type = (INamedTypeSymbol)args[0].Value;
-                            cases.Add(new CaseData(type.ToString(), type.Name));
+                            var type = (INamedTypeSymbol)args[0].Value!;
+                            cases.Add(new CaseData(type.IsValueType, type.ToString(), type.Name));
                         }
                         else if (args.Length == 2)
                         {
-                            var type = args[0].Value?.ToString() ?? "NOTYPE";
+                            var type = (INamedTypeSymbol)args[0].Value!;
                             var name = args[1].Value?.ToString() ?? "NONAME";
-                            cases.Add(new CaseData(type, name));
+                            cases.Add(new CaseData(type.IsValueType, type.ToString(), name));
                         }
                     }
                 }
@@ -243,6 +243,12 @@ namespace DiscriminatedUnionGenerator
                             throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
                     }
                 }
+
+                static string GetValueTypeAppendix(CaseData caseData)
+                {
+                    return caseData.IsValueType ? ".Value" : "";
+                }
+
 
                 sb.AppendLine($@"    partial {KindToString(union.Kind)} {union.TypeName}
     {{");
@@ -311,7 +317,7 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == Case.{caseData.Name} ? _case{union.Cases[i].Name}! : throw new System.InvalidOperationException();");
+                    sb.AppendLine($"        public {caseData.Type} As{caseData.Name} => _tag == Case.{caseData.Name} ? _case{union.Cases[i].Name}!{GetValueTypeAppendix(caseData)} : throw new System.InvalidOperationException();");
                 }
                 sb.AppendLine();
 
@@ -339,7 +345,7 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"                Case.{caseData.Name} => func{caseData.Name}(_case{caseData.Name}!),");
+                    sb.AppendLine($"                Case.{caseData.Name} => func{caseData.Name}(_case{caseData.Name}!{GetValueTypeAppendix(caseData)}),");
                 }
                 sb.AppendLine("                _ => throw new System.InvalidOperationException()");
                 sb.AppendLine("            };");
@@ -363,7 +369,7 @@ namespace DiscriminatedUnionGenerator
                 for (var i = 0; i < union.Cases.Count; i++)
                 {
                     var caseData = union.Cases[i];
-                    sb.AppendLine($"                Case.{caseData.Name} => await func{caseData.Name}(_case{caseData.Name}!).ConfigureAwait(false),");
+                    sb.AppendLine($"                Case.{caseData.Name} => await func{caseData.Name}(_case{caseData.Name}!{GetValueTypeAppendix(caseData)}).ConfigureAwait(false),");
                 }
                 sb.AppendLine("                _ => throw new System.InvalidOperationException()");
                 sb.AppendLine("            };");
@@ -440,12 +446,15 @@ namespace DiscriminatedUnionGenerator
 
     public readonly struct CaseData
     {
-        public CaseData(string type, string name)
+        public CaseData(bool isValueType, string type, string name)
         {
+            IsValueType = isValueType;
             Type = type;
             Name = name;
             LoweredName = Extensions.FirstCharToLowerCase(name);
         }
+
+        public bool IsValueType { get; }
 
         public string Type { get; }
 

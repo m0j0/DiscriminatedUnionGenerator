@@ -16,7 +16,8 @@ namespace DiscriminatedUnionGenerator.Sample
 
             Console.WriteLine(sample.Match(notFound => "not found",
                     st => st,
-                    duplicate => duplicate.Data
+                    duplicate => duplicate.Data,
+                    integ => integ.ToString()
                 )
             );
             Console.WriteLine(await sample.MatchAsync(notFound => Task.FromResult("not found"),
@@ -25,7 +26,8 @@ namespace DiscriminatedUnionGenerator.Sample
                     {
                         await Task.Delay(1);
                         return duplicate.Data;
-                    })
+                    },
+                    integ => Task.FromResult(integ.ToString()))
             );
 
             var sample2 = new SampleRecord("text");
