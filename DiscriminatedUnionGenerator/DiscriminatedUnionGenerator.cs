@@ -1,8 +1,10 @@
 using System.Collections.Immutable;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using CSharpExtensions = Microsoft.CodeAnalysis.CSharp.CSharpExtensions;
 
 namespace DiscriminatedUnionGenerator
 {
@@ -40,14 +42,14 @@ namespace DiscriminatedUnionGenerator
                 "DiscriminatedUnionCaseAttribute.g.cs",
                 SourceText.From(Attribute, Encoding.UTF8)));
             
-            IncrementalValuesProvider<ClassDeclarationSyntax> classDeclarations = context.SyntaxProvider
+            var classDeclarations = context.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (s, _) => IsSyntaxTargetForGeneration(s), // select classes with attributes
                     transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx)) // sect the enum with the [EnumExtensions] attribute
                 .Where(static m => m is not null)!; // filter out attributed classes that we don't care about
 
             // Combine the selected classes with the `Compilation`
-            IncrementalValueProvider<(Compilation, ImmutableArray<ClassDeclarationSyntax>)> compilationAndEnums
+            var compilationAndEnums
                 = context.CompilationProvider.Combine(classDeclarations.Collect());
 
             // Generate the source using the compilation and classes
@@ -57,20 +59,21 @@ namespace DiscriminatedUnionGenerator
 
         private static bool IsSyntaxTargetForGeneration(SyntaxNode node)
         {
-            return node is ClassDeclarationSyntax m && m.AttributeLists.Count > 0;
+            return node is ClassDeclarationSyntax c && c.AttributeLists.Count > 0 ||
+                   node is RecordDeclarationSyntax r && r.AttributeLists.Count > 0;
         }
 
-        private static ClassDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
+        private static TypeDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
         {
             // we know the node is a EnumDeclarationSyntax thanks to IsSyntaxTargetForGeneration
-            var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
+            var classDeclarationSyntax = (TypeDeclarationSyntax)context.Node;
 
             // loop through all the attributes on the method
             foreach (AttributeListSyntax attributeListSyntax in classDeclarationSyntax.AttributeLists)
             {
                 foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes)
                 {
-                    if (context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
+                    if (ModelExtensions.GetSymbolInfo(context.SemanticModel, attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
                     {
                         // weird, we couldn't get the symbol, ignore it
                         continue;
@@ -92,7 +95,7 @@ namespace DiscriminatedUnionGenerator
             return null;
         }
 
-        private static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax> classes, SourceProductionContext context)
+        private static void Execute(Compilation compilation, ImmutableArray<TypeDeclarationSyntax> classes, SourceProductionContext context)
         {
             if (classes.IsDefaultOrEmpty)
             {
@@ -101,7 +104,7 @@ namespace DiscriminatedUnionGenerator
             }
 
             // I'm not sure if this is actually necessary, but `[LoggerMessage]` does it, so seems like a good idea!
-            IEnumerable<ClassDeclarationSyntax> distinctClasses = classes.Distinct();
+            var distinctClasses = classes.Distinct();
 
             // Convert each EnumDeclarationSyntax to an UnionsToGenerate
             var enumsToGenerate = GetTypesToGenerate(compilation, distinctClasses, context.CancellationToken);
@@ -116,7 +119,7 @@ namespace DiscriminatedUnionGenerator
             }
         }
 
-        private static IReadOnlyList<UnionToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<ClassDeclarationSyntax> classes, CancellationToken ct)
+        private static IReadOnlyList<UnionToGenerate> GetTypesToGenerate(Compilation compilation, IEnumerable<TypeDeclarationSyntax> classes, CancellationToken ct)
         {
             // Get the semantic representation of our marker attribute 
             INamedTypeSymbol? caseAttribute = compilation.GetTypeByMetadataName(CaseAttributeName);
@@ -130,17 +133,36 @@ namespace DiscriminatedUnionGenerator
 
             var unionsToGenerates = new List<UnionToGenerate>();
 
-            foreach (ClassDeclarationSyntax classDeclarationSyntax in classes)
+            foreach (var classDeclarationSyntax in classes)
             {
                 // stop if we're asked to
                 ct.ThrowIfCancellationRequested();
 
                 // Get the semantic representation of the enum syntax
                 SemanticModel semanticModel = compilation.GetSemanticModel(classDeclarationSyntax.SyntaxTree);
-                if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol classSymbol)
+                if (ModelExtensions.GetDeclaredSymbol(semanticModel, classDeclarationSyntax) is not INamedTypeSymbol classSymbol)
                 {
                     // something went wrong, bail out
                     continue;
+                }
+
+                UnionKind kind;
+                switch (CSharpExtensions.Kind(classDeclarationSyntax))
+                {
+                    case SyntaxKind.RecordStructDeclaration:
+                        kind = UnionKind.StructRecord;
+                        break;
+                    case SyntaxKind.RecordDeclaration:
+                        kind = UnionKind.Record;
+                        break;
+                    case SyntaxKind.ClassDeclaration:
+                        kind = UnionKind.Class;
+                        break;
+                    case SyntaxKind.StructDeclaration:
+                        kind = UnionKind.Struct;
+                        break;
+                    default:
+                        continue;
                 }
 
 
@@ -184,7 +206,7 @@ namespace DiscriminatedUnionGenerator
                 }
 
 
-                unionsToGenerates.Add(new UnionToGenerate(classSymbol.ContainingNamespace?.ToString(), classSymbol.Name, cases));
+                unionsToGenerates.Add(new UnionToGenerate(kind, classSymbol.ContainingNamespace?.ToString(), classSymbol.Name, cases));
             }
 
             return unionsToGenerates;
@@ -204,7 +226,24 @@ namespace DiscriminatedUnionGenerator
 {{");
                 }
 
-                sb.AppendLine($@"    partial class {union.TypeName}
+                static string KindToString(UnionKind kind)
+                {
+                    switch (kind)
+                    {
+                        case UnionKind.Class:
+                            return "class";
+                        case UnionKind.Record:
+                            return "record";
+                        case UnionKind.Struct:
+                            return "struct";
+                        case UnionKind.StructRecord:
+                            return "record struct";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+                    }
+                }
+
+                sb.AppendLine($@"    partial {KindToString(union.Kind)} {union.TypeName}
     {{");
 
                 #region enum
@@ -239,7 +278,11 @@ namespace DiscriminatedUnionGenerator
                     sb.AppendLine($"        public {union.TypeName}({caseData.Type} {caseData.LoweredName})");
                     sb.AppendLine("        {");
                     sb.AppendLine($"            _tag = Case.{caseData.Name};");
-                    sb.AppendLine($"            _case{union.Cases[i].Name} = {caseData.LoweredName};");
+                    for (var j = 0; j < union.Cases.Count; j++)
+                    {
+                        var fieldValue = i == j ? caseData.LoweredName : "null";
+                        sb.AppendLine($"            _case{union.Cases[j].Name} = {fieldValue};");
+                    }
                     sb.AppendLine("        }");
 
                     if (i != union.Cases.Count - 1)
@@ -364,16 +407,26 @@ namespace DiscriminatedUnionGenerator
         }
     }
 
+    public enum UnionKind
+    {
+        Class,
+        Record,
+        Struct,
+        StructRecord
+    }
 
     public readonly struct UnionToGenerate
     {
-        public UnionToGenerate(string? typeNamespace, string typeName, List<CaseData> cases)
+        public UnionToGenerate(UnionKind kind, string? typeNamespace, string typeName, List<CaseData> cases)
         {
+            Kind = kind;
             TypeNamespace = typeNamespace;
             TypeName = typeName;
             LoweredTypeName = Extensions.FirstCharToLowerCase(typeName);
             Cases = cases;
         }
+
+        public UnionKind Kind { get; }
 
         public string? TypeNamespace { get; }
 

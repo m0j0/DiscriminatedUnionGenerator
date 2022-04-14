@@ -18,4 +18,10 @@ namespace DiscriminatedUnionGenerator.Sample
 
     public sealed record NotFound;
     public sealed record Duplicate(string Data);
+
+
+    [DiscriminatedUnionCase(typeof(NotFound))]
+    [DiscriminatedUnionCase(typeof(string), "Str")]
+    [DiscriminatedUnionCase(typeof(Duplicate))]
+    public readonly partial record struct SampleStructRecord;
 } 
