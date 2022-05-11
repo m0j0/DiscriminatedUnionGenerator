@@ -36,6 +36,41 @@ namespace DiscriminatedUnionGenerator.Sample
                     })
             );
 
+            sample.Switch(
+                notFound => Console.WriteLine("match not found"),
+                s => Console.WriteLine("match str"),
+                duplicate => Console.WriteLine("match duplicate"),
+                integ => Console.WriteLine("match integer"),
+                success => Console.WriteLine("match success")
+            );
+
+            await sample.SwitchAsync(
+                async notFound =>
+                {
+                    await Task.CompletedTask;
+                    Console.WriteLine("async match not found");
+                },
+                async s =>
+                {
+                    await Task.CompletedTask;
+                    Console.WriteLine("async match str");
+                },
+                async duplicate =>
+                {
+                    await Task.CompletedTask;
+                    Console.WriteLine("async match duplicate");
+                },
+                async integ =>
+                {
+                    await Task.CompletedTask;
+                    Console.WriteLine("async match integer");
+                },
+                async success =>
+                {
+                    await Task.CompletedTask;
+                    Console.WriteLine("async match success");
+                });
+
             var sample2 = new SampleRecord("text");
             var strFromSample = (string) sample2;
             Console.WriteLine(strFromSample);
@@ -50,7 +85,7 @@ namespace DiscriminatedUnionGenerator.Sample
                     _ => _,
                     _ => _);
             }
-            catch (InvalidOperationException )
+            catch (InvalidOperationException)
             {
                 Console.WriteLine("exception");
             }
