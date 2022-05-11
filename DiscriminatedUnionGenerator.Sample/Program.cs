@@ -39,6 +39,21 @@ namespace DiscriminatedUnionGenerator.Sample
             var sample2 = new SampleRecord("text");
             var strFromSample = (string) sample2;
             Console.WriteLine(strFromSample);
+
+            try
+            {
+                SampleStructRecord record = default;
+                var t = record.Match<object>(
+                    _ => _,
+                    _ => _,
+                    _ => _,
+                    _ => _,
+                    _ => _);
+            }
+            catch (InvalidOperationException )
+            {
+                Console.WriteLine("exception");
+            }
         }
 
         private static SampleClass CreateSample()
