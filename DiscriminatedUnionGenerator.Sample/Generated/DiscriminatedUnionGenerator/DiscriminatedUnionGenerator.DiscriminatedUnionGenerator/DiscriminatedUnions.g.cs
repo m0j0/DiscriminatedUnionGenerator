@@ -91,6 +91,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, TResult> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, TResult> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => funcNotFound(_caseNotFound!),
@@ -109,6 +115,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, System.Threading.Tasks.Task<TResult>> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task<TResult>> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => await funcNotFound(_caseNotFound!).ConfigureAwait(false),
@@ -226,6 +238,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, TResult> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, TResult> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => funcNotFound(_caseNotFound!),
@@ -244,6 +262,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, System.Threading.Tasks.Task<TResult>> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task<TResult>> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => await funcNotFound(_caseNotFound!).ConfigureAwait(false),
@@ -361,6 +385,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, TResult> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, TResult> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => funcNotFound(_caseNotFound!),
@@ -379,6 +409,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, System.Threading.Tasks.Task<TResult>> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task<TResult>> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => await funcNotFound(_caseNotFound!).ConfigureAwait(false),
@@ -496,6 +532,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, TResult> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, TResult> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => funcNotFound(_caseNotFound!),
@@ -514,6 +556,12 @@ namespace DiscriminatedUnionGenerator.Sample
             System.Func<int, System.Threading.Tasks.Task<TResult>> funcInteg,
             System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task<TResult>> funcSuccess)
         {
+            if (funcNotFound == null) throw new ArgumentNullException("funcNotFound");
+            if (funcStr == null) throw new ArgumentNullException("funcStr");
+            if (funcDuplicate == null) throw new ArgumentNullException("funcDuplicate");
+            if (funcInteg == null) throw new ArgumentNullException("funcInteg");
+            if (funcSuccess == null) throw new ArgumentNullException("funcSuccess");
+
             return _tag switch
             {
                 Case.NotFound => await funcNotFound(_caseNotFound!).ConfigureAwait(false),

@@ -349,6 +349,12 @@ namespace DiscriminatedUnionGenerator
                     sb.AppendLine(i == union.Cases.Count - 1 ? ")" : ",");
                 }
                 sb.AppendLine("        {");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var funcName = $"func{union.Cases[i].Name}";
+                    sb.AppendLine($"            if ({funcName} == null) throw new ArgumentNullException(\"{funcName}\");");
+                }
+                sb.AppendLine();
                 sb.AppendLine("            return _tag switch");
                 sb.AppendLine("            {");
                 for (var i = 0; i < union.Cases.Count; i++)
@@ -373,6 +379,12 @@ namespace DiscriminatedUnionGenerator
                     sb.AppendLine(i == union.Cases.Count - 1 ? ")" : ",");
                 }
                 sb.AppendLine("        {");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var funcName = $"func{union.Cases[i].Name}";
+                    sb.AppendLine($"            if ({funcName} == null) throw new ArgumentNullException(\"{funcName}\");");
+                }
+                sb.AppendLine();
                 sb.AppendLine("            return _tag switch");
                 sb.AppendLine("            {");
                 for (var i = 0; i < union.Cases.Count; i++)
