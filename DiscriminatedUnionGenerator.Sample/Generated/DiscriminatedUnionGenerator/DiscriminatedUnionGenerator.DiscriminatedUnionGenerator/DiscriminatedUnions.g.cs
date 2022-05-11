@@ -23,7 +23,7 @@ namespace DiscriminatedUnionGenerator.Sample
         public SampleClass(DiscriminatedUnionGenerator.Sample.NotFound notFound)
         {
             _tag = Case.NotFound;
-            _caseNotFound = notFound;
+            _caseNotFound = notFound ?? throw new ArgumentNullException("notFound");
             _caseStr = null;
             _caseDuplicate = null;
             _caseInteg = null;
@@ -34,7 +34,7 @@ namespace DiscriminatedUnionGenerator.Sample
         {
             _tag = Case.Str;
             _caseNotFound = null;
-            _caseStr = str;
+            _caseStr = str ?? throw new ArgumentNullException("str");
             _caseDuplicate = null;
             _caseInteg = null;
             _caseSuccess = null;
@@ -45,7 +45,7 @@ namespace DiscriminatedUnionGenerator.Sample
             _tag = Case.Duplicate;
             _caseNotFound = null;
             _caseStr = null;
-            _caseDuplicate = duplicate;
+            _caseDuplicate = duplicate ?? throw new ArgumentNullException("duplicate");
             _caseInteg = null;
             _caseSuccess = null;
         }
@@ -158,7 +158,7 @@ namespace DiscriminatedUnionGenerator.Sample
         public SampleRecord(DiscriminatedUnionGenerator.Sample.NotFound notFound)
         {
             _tag = Case.NotFound;
-            _caseNotFound = notFound;
+            _caseNotFound = notFound ?? throw new ArgumentNullException("notFound");
             _caseStr = null;
             _caseDuplicate = null;
             _caseInteg = null;
@@ -169,7 +169,7 @@ namespace DiscriminatedUnionGenerator.Sample
         {
             _tag = Case.Str;
             _caseNotFound = null;
-            _caseStr = str;
+            _caseStr = str ?? throw new ArgumentNullException("str");
             _caseDuplicate = null;
             _caseInteg = null;
             _caseSuccess = null;
@@ -180,7 +180,7 @@ namespace DiscriminatedUnionGenerator.Sample
             _tag = Case.Duplicate;
             _caseNotFound = null;
             _caseStr = null;
-            _caseDuplicate = duplicate;
+            _caseDuplicate = duplicate ?? throw new ArgumentNullException("duplicate");
             _caseInteg = null;
             _caseSuccess = null;
         }
@@ -293,7 +293,7 @@ namespace DiscriminatedUnionGenerator.Sample
         public SampleStruct(DiscriminatedUnionGenerator.Sample.NotFound notFound)
         {
             _tag = Case.NotFound;
-            _caseNotFound = notFound;
+            _caseNotFound = notFound ?? throw new ArgumentNullException("notFound");
             _caseStr = null;
             _caseDuplicate = null;
             _caseInteg = null;
@@ -304,7 +304,7 @@ namespace DiscriminatedUnionGenerator.Sample
         {
             _tag = Case.Str;
             _caseNotFound = null;
-            _caseStr = str;
+            _caseStr = str ?? throw new ArgumentNullException("str");
             _caseDuplicate = null;
             _caseInteg = null;
             _caseSuccess = null;
@@ -315,7 +315,7 @@ namespace DiscriminatedUnionGenerator.Sample
             _tag = Case.Duplicate;
             _caseNotFound = null;
             _caseStr = null;
-            _caseDuplicate = duplicate;
+            _caseDuplicate = duplicate ?? throw new ArgumentNullException("duplicate");
             _caseInteg = null;
             _caseSuccess = null;
         }
@@ -428,7 +428,7 @@ namespace DiscriminatedUnionGenerator.Sample
         public SampleStructRecord(DiscriminatedUnionGenerator.Sample.NotFound notFound)
         {
             _tag = Case.NotFound;
-            _caseNotFound = notFound;
+            _caseNotFound = notFound ?? throw new ArgumentNullException("notFound");
             _caseStr = null;
             _caseDuplicate = null;
             _caseInteg = null;
@@ -439,7 +439,7 @@ namespace DiscriminatedUnionGenerator.Sample
         {
             _tag = Case.Str;
             _caseNotFound = null;
-            _caseStr = str;
+            _caseStr = str ?? throw new ArgumentNullException("str");
             _caseDuplicate = null;
             _caseInteg = null;
             _caseSuccess = null;
@@ -450,7 +450,7 @@ namespace DiscriminatedUnionGenerator.Sample
             _tag = Case.Duplicate;
             _caseNotFound = null;
             _caseStr = null;
-            _caseDuplicate = duplicate;
+            _caseDuplicate = duplicate ?? throw new ArgumentNullException("duplicate");
             _caseInteg = null;
             _caseSuccess = null;
         }

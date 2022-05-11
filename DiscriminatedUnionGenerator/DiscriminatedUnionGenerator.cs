@@ -287,8 +287,17 @@ namespace DiscriminatedUnionGenerator
                     sb.AppendLine($"            _tag = Case.{caseData.Name};");
                     for (var j = 0; j < union.Cases.Count; j++)
                     {
-                        var fieldValue = i == j ? caseData.LoweredName : "null";
-                        sb.AppendLine($"            _case{union.Cases[j].Name} = {fieldValue};");
+                        if (i == j)
+                        {
+                            sb.Append($"            _case{union.Cases[j].Name} = {caseData.LoweredName}");
+                            sb.AppendLine(caseData.IsValueType
+                                ? ";"
+                                : $" ?? throw new ArgumentNullException(\"{caseData.LoweredName}\");");
+                        }
+                        else
+                        {
+                            sb.AppendLine($"            _case{union.Cases[j].Name} = null;");
+                        }
                     }
                     sb.AppendLine("        }");
 
