@@ -7,7 +7,7 @@ TODO:
 4. разнести по разным файлам - ?
 5. 
 6. 
-7. switch https://github.com/mcintyre321/OneOf/blob/master/OneOf/OneOfT2.generated.cs#L53
+7. 
 8. вложенные типы?
 9. генерация в жсон и швакебульку
 10. нормальные сообщения в исключениях

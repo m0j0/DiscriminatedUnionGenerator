@@ -113,6 +113,35 @@ namespace DiscriminatedUnionGenerator.Sample
             };
         }
 
+        public async System.Threading.Tasks.Task SwitchAsync(
+            System.Func<DiscriminatedUnionGenerator.Sample.NotFound, System.Threading.Tasks.Task>? actionNotFound,
+            System.Func<string, System.Threading.Tasks.Task>? actionStr,
+            System.Func<DiscriminatedUnionGenerator.Sample.Duplicate, System.Threading.Tasks.Task>? actionDuplicate,
+            System.Func<int, System.Threading.Tasks.Task>? actionInteg,
+            System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    if (actionNotFound != null) await actionNotFound(_caseNotFound!).ConfigureAwait(false);
+                    break;
+                case Case.Str:
+                    if (actionStr != null) await actionStr(_caseStr!).ConfigureAwait(false);
+                    break;
+                case Case.Duplicate:
+                    if (actionDuplicate != null) await actionDuplicate(_caseDuplicate!).ConfigureAwait(false);
+                    break;
+                case Case.Integ:
+                    if (actionInteg != null) await actionInteg(_caseInteg!.Value).ConfigureAwait(false);
+                    break;
+                case Case.Success:
+                    if (actionSuccess != null) await actionSuccess(_caseSuccess!.Value).ConfigureAwait(false);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
+
         public TResult Match<TResult>(
             System.Func<DiscriminatedUnionGenerator.Sample.NotFound, TResult> funcNotFound,
             System.Func<string, TResult> funcStr,
@@ -283,6 +312,35 @@ namespace DiscriminatedUnionGenerator.Sample
                     break;
                 case Case.Success:
                     actionSuccess?.Invoke(_caseSuccess!.Value);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
+
+        public async System.Threading.Tasks.Task SwitchAsync(
+            System.Func<DiscriminatedUnionGenerator.Sample.NotFound, System.Threading.Tasks.Task>? actionNotFound,
+            System.Func<string, System.Threading.Tasks.Task>? actionStr,
+            System.Func<DiscriminatedUnionGenerator.Sample.Duplicate, System.Threading.Tasks.Task>? actionDuplicate,
+            System.Func<int, System.Threading.Tasks.Task>? actionInteg,
+            System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    if (actionNotFound != null) await actionNotFound(_caseNotFound!).ConfigureAwait(false);
+                    break;
+                case Case.Str:
+                    if (actionStr != null) await actionStr(_caseStr!).ConfigureAwait(false);
+                    break;
+                case Case.Duplicate:
+                    if (actionDuplicate != null) await actionDuplicate(_caseDuplicate!).ConfigureAwait(false);
+                    break;
+                case Case.Integ:
+                    if (actionInteg != null) await actionInteg(_caseInteg!.Value).ConfigureAwait(false);
+                    break;
+                case Case.Success:
+                    if (actionSuccess != null) await actionSuccess(_caseSuccess!.Value).ConfigureAwait(false);
                     break;
                 default:
                     throw new System.InvalidOperationException();
@@ -465,6 +523,35 @@ namespace DiscriminatedUnionGenerator.Sample
             };
         }
 
+        public async System.Threading.Tasks.Task SwitchAsync(
+            System.Func<DiscriminatedUnionGenerator.Sample.NotFound, System.Threading.Tasks.Task>? actionNotFound,
+            System.Func<string, System.Threading.Tasks.Task>? actionStr,
+            System.Func<DiscriminatedUnionGenerator.Sample.Duplicate, System.Threading.Tasks.Task>? actionDuplicate,
+            System.Func<int, System.Threading.Tasks.Task>? actionInteg,
+            System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    if (actionNotFound != null) await actionNotFound(_caseNotFound!).ConfigureAwait(false);
+                    break;
+                case Case.Str:
+                    if (actionStr != null) await actionStr(_caseStr!).ConfigureAwait(false);
+                    break;
+                case Case.Duplicate:
+                    if (actionDuplicate != null) await actionDuplicate(_caseDuplicate!).ConfigureAwait(false);
+                    break;
+                case Case.Integ:
+                    if (actionInteg != null) await actionInteg(_caseInteg!.Value).ConfigureAwait(false);
+                    break;
+                case Case.Success:
+                    if (actionSuccess != null) await actionSuccess(_caseSuccess!.Value).ConfigureAwait(false);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
+
         public TResult Match<TResult>(
             System.Func<DiscriminatedUnionGenerator.Sample.NotFound, TResult> funcNotFound,
             System.Func<string, TResult> funcStr,
@@ -635,6 +722,35 @@ namespace DiscriminatedUnionGenerator.Sample
                     break;
                 case Case.Success:
                     actionSuccess?.Invoke(_caseSuccess!.Value);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
+
+        public async System.Threading.Tasks.Task SwitchAsync(
+            System.Func<DiscriminatedUnionGenerator.Sample.NotFound, System.Threading.Tasks.Task>? actionNotFound,
+            System.Func<string, System.Threading.Tasks.Task>? actionStr,
+            System.Func<DiscriminatedUnionGenerator.Sample.Duplicate, System.Threading.Tasks.Task>? actionDuplicate,
+            System.Func<int, System.Threading.Tasks.Task>? actionInteg,
+            System.Func<DiscriminatedUnionGenerator.Sample.Success, System.Threading.Tasks.Task>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    if (actionNotFound != null) await actionNotFound(_caseNotFound!).ConfigureAwait(false);
+                    break;
+                case Case.Str:
+                    if (actionStr != null) await actionStr(_caseStr!).ConfigureAwait(false);
+                    break;
+                case Case.Duplicate:
+                    if (actionDuplicate != null) await actionDuplicate(_caseDuplicate!).ConfigureAwait(false);
+                    break;
+                case Case.Integ:
+                    if (actionInteg != null) await actionInteg(_caseInteg!.Value).ConfigureAwait(false);
+                    break;
+                case Case.Success:
+                    if (actionSuccess != null) await actionSuccess(_caseSuccess!.Value).ConfigureAwait(false);
                     break;
                 default:
                     throw new System.InvalidOperationException();

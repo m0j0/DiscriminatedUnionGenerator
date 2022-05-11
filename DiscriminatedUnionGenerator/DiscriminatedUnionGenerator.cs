@@ -366,6 +366,34 @@ namespace DiscriminatedUnionGenerator
 
                 #endregion
 
+                #region switch async
+
+                sb.AppendLine("        public async System.Threading.Tasks.Task SwitchAsync(");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.Append($"            System.Func<{caseData.Type}, System.Threading.Tasks.Task>? action{caseData.Name}");
+                    sb.AppendLine(i == union.Cases.Count - 1 ? ")" : ",");
+                }
+                sb.AppendLine("        {");
+                sb.AppendLine("            switch (_tag)");
+                sb.AppendLine("            {");
+                for (var i = 0; i < union.Cases.Count; i++)
+                {
+                    var caseData = union.Cases[i];
+                    sb.AppendLine($"                case Case.{caseData.Name}:");
+                    var actionName = $"action{caseData.Name}";
+                    sb.AppendLine($"                    if ({actionName} != null) await {actionName}(_case{caseData.Name}!{GetValueTypeAppendix(caseData)}).ConfigureAwait(false);");
+                    sb.AppendLine("                    break;");
+                }
+                sb.AppendLine("                default:");
+                sb.AppendLine("                    throw new System.InvalidOperationException();");
+                sb.AppendLine("            };");
+                sb.AppendLine("        }");
+                sb.AppendLine();
+
+                #endregion
+
                 #region match
 
                 sb.AppendLine("        public TResult Match<TResult>(");
