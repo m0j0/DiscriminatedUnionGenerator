@@ -84,6 +84,35 @@ namespace DiscriminatedUnionGenerator.Sample
 
         public Case Tag => _tag;
 
+        public void Switch(
+            System.Action<DiscriminatedUnionGenerator.Sample.NotFound>? actionNotFound,
+            System.Action<string>? actionStr,
+            System.Action<DiscriminatedUnionGenerator.Sample.Duplicate>? actionDuplicate,
+            System.Action<int>? actionInteg,
+            System.Action<DiscriminatedUnionGenerator.Sample.Success>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    actionNotFound?.Invoke(_caseNotFound!);
+                    break;
+                case Case.Str:
+                    actionStr?.Invoke(_caseStr!);
+                    break;
+                case Case.Duplicate:
+                    actionDuplicate?.Invoke(_caseDuplicate!);
+                    break;
+                case Case.Integ:
+                    actionInteg?.Invoke(_caseInteg!.Value);
+                    break;
+                case Case.Success:
+                    actionSuccess?.Invoke(_caseSuccess!.Value);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
+
         public TResult Match<TResult>(
             System.Func<DiscriminatedUnionGenerator.Sample.NotFound, TResult> funcNotFound,
             System.Func<string, TResult> funcStr,
@@ -230,6 +259,35 @@ namespace DiscriminatedUnionGenerator.Sample
         public DiscriminatedUnionGenerator.Sample.Success AsSuccess => _tag == Case.Success ? _caseSuccess!.Value : throw new System.InvalidOperationException();
 
         public Case Tag => _tag;
+
+        public void Switch(
+            System.Action<DiscriminatedUnionGenerator.Sample.NotFound>? actionNotFound,
+            System.Action<string>? actionStr,
+            System.Action<DiscriminatedUnionGenerator.Sample.Duplicate>? actionDuplicate,
+            System.Action<int>? actionInteg,
+            System.Action<DiscriminatedUnionGenerator.Sample.Success>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    actionNotFound?.Invoke(_caseNotFound!);
+                    break;
+                case Case.Str:
+                    actionStr?.Invoke(_caseStr!);
+                    break;
+                case Case.Duplicate:
+                    actionDuplicate?.Invoke(_caseDuplicate!);
+                    break;
+                case Case.Integ:
+                    actionInteg?.Invoke(_caseInteg!.Value);
+                    break;
+                case Case.Success:
+                    actionSuccess?.Invoke(_caseSuccess!.Value);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
 
         public TResult Match<TResult>(
             System.Func<DiscriminatedUnionGenerator.Sample.NotFound, TResult> funcNotFound,
@@ -378,6 +436,35 @@ namespace DiscriminatedUnionGenerator.Sample
 
         public Case Tag => _tag;
 
+        public void Switch(
+            System.Action<DiscriminatedUnionGenerator.Sample.NotFound>? actionNotFound,
+            System.Action<string>? actionStr,
+            System.Action<DiscriminatedUnionGenerator.Sample.Duplicate>? actionDuplicate,
+            System.Action<int>? actionInteg,
+            System.Action<DiscriminatedUnionGenerator.Sample.Success>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    actionNotFound?.Invoke(_caseNotFound!);
+                    break;
+                case Case.Str:
+                    actionStr?.Invoke(_caseStr!);
+                    break;
+                case Case.Duplicate:
+                    actionDuplicate?.Invoke(_caseDuplicate!);
+                    break;
+                case Case.Integ:
+                    actionInteg?.Invoke(_caseInteg!.Value);
+                    break;
+                case Case.Success:
+                    actionSuccess?.Invoke(_caseSuccess!.Value);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
+
         public TResult Match<TResult>(
             System.Func<DiscriminatedUnionGenerator.Sample.NotFound, TResult> funcNotFound,
             System.Func<string, TResult> funcStr,
@@ -524,6 +611,35 @@ namespace DiscriminatedUnionGenerator.Sample
         public DiscriminatedUnionGenerator.Sample.Success AsSuccess => _tag == Case.Success ? _caseSuccess!.Value : throw new System.InvalidOperationException();
 
         public Case Tag => _tag;
+
+        public void Switch(
+            System.Action<DiscriminatedUnionGenerator.Sample.NotFound>? actionNotFound,
+            System.Action<string>? actionStr,
+            System.Action<DiscriminatedUnionGenerator.Sample.Duplicate>? actionDuplicate,
+            System.Action<int>? actionInteg,
+            System.Action<DiscriminatedUnionGenerator.Sample.Success>? actionSuccess)
+        {
+            switch (_tag)
+            {
+                case Case.NotFound:
+                    actionNotFound?.Invoke(_caseNotFound!);
+                    break;
+                case Case.Str:
+                    actionStr?.Invoke(_caseStr!);
+                    break;
+                case Case.Duplicate:
+                    actionDuplicate?.Invoke(_caseDuplicate!);
+                    break;
+                case Case.Integ:
+                    actionInteg?.Invoke(_caseInteg!.Value);
+                    break;
+                case Case.Success:
+                    actionSuccess?.Invoke(_caseSuccess!.Value);
+                    break;
+                default:
+                    throw new System.InvalidOperationException();
+            };
+        }
 
         public TResult Match<TResult>(
             System.Func<DiscriminatedUnionGenerator.Sample.NotFound, TResult> funcNotFound,
