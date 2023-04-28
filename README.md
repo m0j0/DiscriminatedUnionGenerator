@@ -13,3 +13,4 @@ TODO:
 10. генерация в жсон и швакебульку
 11. анализатор для тега
 12. https://docs.microsoft.com/en-us/dotnet/api/system.argumentnullexception.throwifnull если .NET 6
+13. https://github.com/CommunityToolkit/dotnet примеры генераторов
